@@ -18,6 +18,24 @@ const getProjectById = async (id) => {
   }
 };
 
+const getProjectByUrlPrefix = async (urlPrefix) => {
+  try {
+    const result = await projectRepository.getProjectByUrlPrefix(urlPrefix);
+    return result;
+  } catch (error) {
+    throw new Error(`Error in ProjectService getProjectById: ${error}`);
+  }
+};
+
+const getProjectByName = async (projectName) => {
+  try {
+    const result = await projectRepository.getProjectByName(projectName);
+    return result;
+  } catch (error) {
+    throw new Error(`Error in ProjectService getProjectById: ${error}`);
+  }
+};
+
 const addProject = async (projectData) => {
   try {
     const result = await projectRepository.addProject(projectData);
@@ -48,6 +66,8 @@ const deleteProject = async (id) => {
 export default {
   getAllProjects,
   getProjectById,
+  getProjectByUrlPrefix,
+  getProjectByName,
   addProject,
   updateProjectById,
   deleteProject,
