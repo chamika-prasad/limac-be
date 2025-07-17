@@ -14,7 +14,8 @@ router.get(
 router.get(
   "/get/:id",
   // tokenMiddleware.verifyToken,
-  projectController.getProjectById
+  // projectController.getProjectById
+  projectController.getProjectByUrlPrefix
 );
 
 router.post(

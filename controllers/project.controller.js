@@ -37,12 +37,44 @@ const getProjectById = async (req, res) => {
   }
 };
 
+// Get project by ID
+const getProjectByUrlPrefix = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const project = await projectService.getProjectByUrlPrefix(id);
+    if (!project.success) {
+      return res.status(404).json({
+        success: false,
+        message: project.message,
+      });
+    }
+    return res.status(200).json(project);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving project",
+      error: error.message,
+    });
+  }
+};
+
 // Add a new project
 const addProject = async (req, res) => {
   try {
     // const projectData = req.body;
     const body = req.body;
     const projectFolder = body.id;
+
+    const oldProjectWithSameName = await projectService.getProjectByName(
+      body.projectName
+    );
+
+    if (oldProjectWithSameName.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Project with this name already exists.",
+      });
+    }
 
     const topImagePaths = (req.files["topImages"] || []).map((file) =>
       path
@@ -55,10 +87,19 @@ const addProject = async (req, res) => {
         .replace(/\\/g, "/")
     );
 
+    const slugify = (name) =>
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+    const urlPrefix = slugify(body.projectName);
+
     const projectData = {
       ...body,
       topImages: topImagePaths.join(","),
       bottomImages: bottomImagePaths.join(","),
+      urlPrefix: urlPrefix,
     };
 
     const newProject = await projectService.addProject(projectData);
@@ -83,7 +124,6 @@ const updateProjectById = async (req, res) => {
     // for (const [key, value] of updatedData.entries()) {
     //   console.log(key, value);
     // }
-    
 
     const oldProject = await projectService.getProjectById(id);
 
@@ -144,6 +184,28 @@ const updateProjectById = async (req, res) => {
       ...oldBottomImages.filter((img) => !removeBottomImages.includes(img)),
       ...newBottomImages,
     ];
+
+    // Generate urlPrefix from projectName if present
+    if (updatedData.projectName) {
+      const oldProjectWithSameName = await projectService.getProjectByName(
+        updatedData.projectName
+      );
+
+      if (oldProjectWithSameName.success) {
+        return res.status(400).json({
+          success: false,
+          message: "Project with this name already exists.",
+        });
+      }
+
+      const slugify = (name) =>
+        name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+      updatedData.urlPrefix = slugify(updatedData.projectName);
+    }
 
     // Remove properties removeTopImages and removeBottomImages if they exist
     delete updatedData.removeTopImages;
@@ -206,6 +268,7 @@ const deleteProject = async (req, res) => {
 export default {
   getAllProjects,
   getProjectById,
+  getProjectByUrlPrefix,
   addProject,
   updateProjectById,
   deleteProject,

@@ -32,6 +32,52 @@ const getProjectById = async (id) => {
   }
 };
 
+const getProjectByUrlPrefix = async (urlPrefix) => {
+  try {
+    const project = await Project.findOne({ where: { urlPrefix } });
+
+    if (!project) {
+      return {
+        success: false,
+        message: "Project not found",
+      };
+    }
+
+    return {
+      success: true,
+      data: project,
+      message: "Project retrieved successfully",
+    };
+  } catch (error) {
+    throw new Error(
+      `Error in ProjectRepository getProjectByUrlPrefix: ${error}`
+    );
+  }
+};
+
+const getProjectByName = async (projectName) => {
+  try {
+    const project = await Project.findOne({ where: { projectName } });
+
+    if (!project) {
+      return {
+        success: false,
+        message: "Project not found",
+      };
+    }
+
+    return {
+      success: true,
+      data: project,
+      message: "Project retrieved successfully",
+    };
+  } catch (error) {
+    throw new Error(
+      `Error in ProjectRepository getProjectByUrlPrefix: ${error}`
+    );
+  }
+};
+
 const addProject = async (projectData) => {
   try {
     const newProject = await Project.create(projectData);
@@ -91,6 +137,8 @@ const deleteProject = async (id) => {
 export default {
   getAllProjects,
   getProjectById,
+  getProjectByUrlPrefix,
+  getProjectByName,
   addProject,
   updateProjectById,
   deleteProject,

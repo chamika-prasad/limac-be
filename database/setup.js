@@ -44,6 +44,7 @@ const SQL_STATEMENTS = [
         logo VARCHAR(255)
       )
     `,
+  `ALTER TABLE projects ADD COLUMN urlPrefix VARCHAR(255)`,
 ];
 
 async function setupDatabase() {
