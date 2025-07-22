@@ -27,7 +27,8 @@ const SQL_STATEMENTS = [
         topImages TEXT,
         bottomImages TEXT,
         highlights TEXT,
-        status VARCHAR(50) DEFAULT 'ongoing'
+        status VARCHAR(50) DEFAULT 'ongoing',
+        urlPrefix VARCHAR(255)
       )
     `,
   `CREATE TABLE IF NOT EXISTS services (
@@ -44,7 +45,6 @@ const SQL_STATEMENTS = [
         logo VARCHAR(255)
       )
     `,
-  `ALTER TABLE projects ADD COLUMN IF NOT EXISTS urlPrefix VARCHAR(255)`,
   `CREATE TABLE IF NOT EXISTS home (
         id VARCHAR(36) PRIMARY KEY,
         image VARCHAR(255)
